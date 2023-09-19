@@ -5,6 +5,13 @@ const c_time = @cImport(@cInclude("time.h"));
 const random = std.rand.DefaultPrng;
 const print = std.debug.print;
 
+const exp = std.math.exp;
+const pow = std.math.pow;
+
+fn sigmoid(x: f64) f64 {
+    return exp(x) / (exp(x) + 1.0);
+}
+
 fn rand_float() f32 {
     const seed: u64 = @intCast(c_time.time(0));
 
@@ -28,7 +35,7 @@ fn cost(w1: f32, w2: f32, b: f32) f32 {
     for (train) |val| {
         const x1 = val[0];
         const x2 = val[1];
-        const y = x1 * w1 + x2 * w2 + b;
+        const y: f32 = @floatCast(sigmoid(x1 * w1 + x2 * w2 + b));
         // Calculate error
         const err = (val[2]) - y;
 
@@ -53,8 +60,9 @@ pub fn main() !void {
     var w1 = rand_float() * 10.0;
     var w2 = rand_float() * 10.0;
     const eps = 1e-3;
-    const train = 5000; // This time we _iterate_ through our cost function 4 more times
-    for (0..train) |i| {
+    const train = 1000000; // This time we _iterate_ through our cost function 4 more times
+    var result: f32 = 0;
+    for (0..train) |_| {
         var dw1 = (cost(w1 + eps, w2 , b) - cost(w1, w2, b)) / eps;
         var dw2 = (cost(w1, w2 + eps, b) - cost(w1, w2, b)) / eps;
         var db = (cost(w1, w2, b + eps) - cost(w1, w2, b)) / eps;
@@ -62,6 +70,8 @@ pub fn main() !void {
         w2 -= dw2 * rate;
         b -= db * rate;
         // We see that it's actually getting better!
-        print("ITER {}: cost = {}, w1 = {}, w2 = {}, b = {}\n", .{i, cost(w1, w2, b), w1, w2, b});
+        result = cost(w1, w2, b);
+        // print("ITER {}: cost = {}, w1 = {}, w2 = {}, b = {}\n", .{i, result, w1, w2, b});
     }
+    print("ITER {}: cost = {}, w1 = {}, w2 = {}, b = {}\n", .{train, result, w1, w2, b});
 }
