@@ -47,12 +47,20 @@ pub fn main() !void {
     print("Very rudimentary machine learning\n", .{});
     print("\n", .{});
 
-    const sample_or = [_][3]f32 {
+    // OR Sample
+    const sample = [_][3]f32 {
         [3]f32{0, 0, 0},
         [3]f32{0, 1, 1},
         [3]f32{1, 0, 1},
         [3]f32{1, 1, 1},
     };
+    // NAND sample
+    // const sample = [_][3]f32 {
+    //     [3]f32{0, 0, 0},
+    //     [3]f32{0, 1, 1},
+    //     [3]f32{1, 0, 1},
+    //     [3]f32{1, 1, 1},
+    // };
 
     var b = rand_float() * 1.0e-15;
     const rate = 1e-3;
@@ -64,14 +72,14 @@ pub fn main() !void {
     var runtime_zero: usize = 0;
 
     for (0..train) |_| {
-        var dw1 = (cost(sample_or[runtime_zero..sample_or.len], w1 + eps, w2 , b) - cost(sample_or[runtime_zero..sample_or.len], w1, w2, b)) / eps;
-        var dw2 = (cost(sample_or[runtime_zero..sample_or.len], w1, w2 + eps, b) - cost(sample_or[runtime_zero..sample_or.len], w1, w2, b)) / eps;
-        var db = (cost(sample_or[runtime_zero..sample_or.len], w1, w2, b + eps) - cost(sample_or[runtime_zero..sample_or.len], w1, w2, b)) / eps;
+        var dw1 = (cost(sample[runtime_zero..sample.len], w1 + eps, w2 , b) - cost(sample[runtime_zero..sample.len], w1, w2, b)) / eps;
+        var dw2 = (cost(sample[runtime_zero..sample.len], w1, w2 + eps, b) - cost(sample[runtime_zero..sample.len], w1, w2, b)) / eps;
+        var db = (cost(sample[runtime_zero..sample.len], w1, w2, b + eps) - cost(sample[runtime_zero..sample.len], w1, w2, b)) / eps;
         w1 -= dw1 * rate;
         w2 -= dw2 * rate;
         b -= db * rate;
         // We see that it's actually getting better!
-        result = cost(&sample_or, w1, w2, b);
+        result = cost(&sample, w1, w2, b);
         // print("ITER {}: cost = {}, w1 = {}, w2 = {}, b = {}\n", .{i, result, w1, w2, b});
     }
     // print("ITER {}: cost = {}, w1 = {}, w2 = {}, b = {}\n", .{train, result, w1, w2, b});
@@ -80,7 +88,7 @@ pub fn main() !void {
 
     
     // Should be very close to its expected value!
-    for (sample_or) |row| {
+    for (sample) |row| {
         print("x1: {}, x2: {}, y: {}\n", .{@as(i32, @intFromFloat(row[0])), @as(i32, @intFromFloat(row[1])), sigmoid(row[0] * w1 + row[1] * w2 + b)});
     }
 }
