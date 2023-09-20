@@ -19,7 +19,7 @@ fn rand_float() f32 {
     return rand.random().float(f32);
 }
 
-// Returns the mean sequare error (the cost) of a model
+// Returns the mean sequare error (the cost) of a model with 2 inputs (x1, x2), and one expected output (y)
 fn cost(sample: []const [3]f32, w1: f32, w2: f32, b: f32) f32 {
     var results: f32 = 0.0;
 
