@@ -37,7 +37,7 @@ fn cost(w1: f32, w2: f32, b: f32) f32 {
         const x2 = val[1];
         const y: f32 = @floatCast(sigmoid(x1 * w1 + x2 * w2 + b));
         // Calculate error
-        const err = (val[2]) - y;
+        const err = y - (val[2]);
 
         // Calculate square error
         //  On top of making the value always postive, and emphasizes the more
@@ -60,7 +60,7 @@ pub fn main() !void {
     var w1 = rand_float() * 10.0;
     var w2 = rand_float() * 10.0;
     const eps = 1e-3;
-    const train = 1000000; // This time we _iterate_ through our cost function 4 more times
+    const train = 100000000; // This time we _iterate_ through our cost function 4 more times
     var result: f32 = 0;
     for (0..train) |_| {
         var dw1 = (cost(w1 + eps, w2 , b) - cost(w1, w2, b)) / eps;
@@ -74,4 +74,18 @@ pub fn main() !void {
         // print("ITER {}: cost = {}, w1 = {}, w2 = {}, b = {}\n", .{i, result, w1, w2, b});
     }
     print("ITER {}: cost = {}, w1 = {}, w2 = {}, b = {}\n", .{train, result, w1, w2, b});
+
+    print("Testing model!\n", .{});
+
+    const sample = [_][3]f32 {
+        [3]f32{0, 0, 0},
+        [3]f32{0, 1, 1},
+        [3]f32{1, 0, 1},
+        [3]f32{1, 1, 1},
+    };
+    
+    // Should be very close to its expected value!
+    for (sample) |row| {
+        print("x1: {}, x2: {}, y: {}\n", .{row[0], row[1], sigmoid(row[0] * w1 + row[1] * w2 + b)});
+    }
 }
